@@ -28,8 +28,14 @@ db = client["ROBOT-UCSD"]
 
 facial_expressions = db["facial_expressions"] # Creation/Access of table Expressions
 body_gestures = db["body_gestures"]  # Creation/Access of table Movements
+
+# TODO: Esta es la de sounds (incluye la entrada de Hum)
 sounds = db["tones_of_voice"] # Creation/Access of table Tones of Voice
+
+# TODO: Esta es la de talk (tabla/coleccion con un solo elemento)
 verbal = db["speech_elements"]  # Creation/Access of table Speech
+
+# TODO: Esta es la de actions (copiar y pegar la de routines) y cambiar el nombre del array
 routines = db["routines"]  # Creation/Access of table Routines
 
 # Connect to MONGO CLIENT (LOCAL LEVEL)
@@ -263,6 +269,7 @@ def fetch_routines_from_db():
 def fetch_routine_from_db(name):
     try:
         # Refresh of Routines collections
+        # TODO: Esta es la de actions (copiar y pegar la de routines) y cambiar el nombre del array
         routines = db["routines"]
 
         # Get specific routine
