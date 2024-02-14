@@ -246,8 +246,23 @@ export class AppComponent implements OnInit {
     
               // Iterate through the current routine's blocks
               // and add them to a dictionary.
-              for(let i=0; i< this.routine.array_block.length; i++){
+              for(let i=0; i < this.routine.array_block.length; i++){
                 let Line = "Behave_" + (i+1);
+
+                // Iterate through each of the properties of each 
+                // block in the routine.
+                // If property is null, 0, "" delete from object
+                // and not show it on YAML preview
+                for(let j=0; j < this.routine.array_block[i].length; j++){
+                  Object.entries(this.routine.array_block[i][j]).forEach(([key, value]) => {
+                      if(!value){
+                        const name = `${key}`;
+                        delete this.routine.array_block[i][j][name];
+                      }
+
+                    })
+                }
+                console.log(this.routine.array_block[i]);
                 display_data[Line] = this.routine.array_block[i];
               }
     
