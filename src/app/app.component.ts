@@ -182,10 +182,6 @@ export class AppComponent implements OnInit {
     this.new_block.sendScroll(event);
   }
 
-  saveRoutine(){ // Button for save
-    this.popUpService.ask_name("ask");
-  }
-
   onNewPressed(){ // New tab
     this.agregarTabAlContainer();
   }

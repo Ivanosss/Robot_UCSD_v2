@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewInit, ViewChildren, QueryLis
 import { IonButton, IonContent } from '@ionic/angular';
 import { Block } from '../models/blocks.model';
 import { Routines, Send_block } from '../models/routines.model';
-import { PopUpService } from '../pop-up.service';
+import { PopUpService, SendDataRoutine } from '../pop-up.service';
 import { NewBlockService } from '../new-block.service';
 import { SendData } from '../new-block.service';
 import { RestService } from '../rest.service';
@@ -24,7 +24,7 @@ export class BlockComponentComponent implements AfterViewInit {
   @Output() agregarTabEvent = new EventEmitter<void>();
 
   current_routine: Routines = new Routines(); // Super important, where the visible routine is stored
-
+  send_data_routine: SendDataRoutine = new SendDataRoutine();
   current_block: Send_block = new Send_block();
 
   blocks: number = 0;
@@ -65,6 +65,11 @@ export class BlockComponentComponent implements AfterViewInit {
       if(dropped){
         this.openPopUp(this.current_block); // When dropped open the corresponding pop-up
       }
+      
+      // Save the routine when adding block
+      this.send_data_routine.routine = this.current_routine;
+      this.send_data_routine.type_def = "Show_Routine";
+      this.popUpService.saveRoutineEvent.emit(this.send_data_routine);
     });
     
     this.popUpService.saveRoutineEvent.subscribe((data) => {
@@ -76,21 +81,15 @@ export class BlockComponentComponent implements AfterViewInit {
         this.rs.upload_routine(data.routine, "0").subscribe(
           (response) => {
             console.log(response);
-            if(response["Code"] == 1){ // If routine name is found to be a duplicate, alert user
-              this.popUpService.openDuplicateModal(data.routine.name);
-              this.popUpService.replaceRoutineEvent.subscribe((respone) => {
-                if(respone == 1){ // If user decides to overwrite duplicate, update the routine
+            if(response["Code"] == 1){ // Upload routine to the database (Always overwrite)
+              this.rs.upload_routine(data.routine, "1").subscribe( 
+                (respone) => {
                   console.log(respone);
-                  this.rs.upload_routine(data.routine, "1").subscribe( 
-                    (respone) => {
-                      console.log(respone);
-                    },
-                    (error) => {
-                      console.log(error);
-                    }
-                  )
+                },
+                (error) => {
+                  console.log(error);
                 }
-              })
+              )
             }
             popUpService.result_ready(data.routine); // Send name to app for the tab
           },
@@ -100,12 +99,6 @@ export class BlockComponentComponent implements AfterViewInit {
         );
       }
     });
-
-    this.popUpService.NameRoutine.subscribe((data) => { 
-      // When clicking save (initial button) this is called
-      // Send the current routine
-      this.popUpService.ask_name("respond", this.current_routine);
-    })
 
     this.popUpService.retrieve_past_routine.subscribe((data) => {
       this.current_routine = data; // Updates the actual rutine
@@ -450,6 +443,10 @@ export class BlockComponentComponent implements AfterViewInit {
       if(this.current_routine.array_block[position.row].length == 0){ // If row is now empty erase
         this.current_routine.array_block.splice(position.row, 1);
       }
+      // Save the routine when moving block
+      this.send_data_routine.routine = this.current_routine;
+      this.send_data_routine.type_def = "Show_Routine";
+      this.popUpService.saveRoutineEvent.emit(this.send_data_routine);
     } else {
       this.blocks -= 1;
     }
