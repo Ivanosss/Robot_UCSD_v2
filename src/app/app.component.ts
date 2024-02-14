@@ -247,7 +247,7 @@ export class AppComponent implements OnInit {
               // Iterate through the current routine's blocks
               // and add them to a dictionary.
               for(let i=0; i< this.routine.array_block.length; i++){
-                let Line = "Line_" + (i+1);
+                let Line = "Behave_" + (i+1);
                 display_data[Line] = this.routine.array_block[i];
               }
     
