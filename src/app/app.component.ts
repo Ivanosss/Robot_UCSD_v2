@@ -7,7 +7,7 @@ import { SidebarModule } from './sidebar/sidebar.module';
 import { ScrollDetail } from '@ionic/angular';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { PopUpService } from './pop-up.service';
+import { PopUpService, SendDataRoutine } from './pop-up.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RestService } from './rest.service';
 import { NewBlockService } from './new-block.service';
@@ -46,6 +46,8 @@ export class AppComponent implements OnInit {
   routine: Routines;
   opened_tab: number = 0; // id of the current opened tab
   routines: Array<Routines> = []; // All of the routines in the tabs
+  renaming_routine: boolean = false;
+  send_data_routine: SendDataRoutine = new SendDataRoutine();
 
   constructor(private new_block: NewBlockService, private popUpService: PopUpService, private componentFactoryResolver: ComponentFactoryResolver,
     private popoverController: PopoverController, private rs: RestService, private tabService: TabServiceService) {
@@ -264,5 +266,19 @@ export class AppComponent implements OnInit {
   tabClicked(event: Event, i:number){ // Change between tabs
     this.opened_tab = i;
     this.popUpService.push_routine(this.routines[i]);
+  }
+
+  currentTabClicked(event: Event, i:number){ //Change to text input to rename the routine when double clicking
+    this.renaming_routine = true;
+  }
+
+  handleBlur(event:Event, i:number, value: string){ // Return to label when the user clicked away
+    this.renaming_routine = false; // Change names and values
+    this.routines[i].name = value
+    this.tabDataList[i].tabName = value
+    
+    this.send_data_routine.routine = this.routines[i]; // Upload the new name
+    this.send_data_routine.type_def = "Show_Routine";
+    this.popUpService.saveRoutineEvent.emit(this.send_data_routine);
   }
 }
