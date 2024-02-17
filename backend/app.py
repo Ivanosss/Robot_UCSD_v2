@@ -23,10 +23,10 @@ user = os.getenv("MONGO_USR")
 password = os.getenv("password")
 
 # Access to database containing all data
+client = MongoClient(f"mongodb+srv://{user}:{password}@robot-ucsd.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
 ### 16/02/24 cmabie @robot-ucsd a @robotucsd_testing, donde YO estoy haciendo pruebas
-# client = MongoClient(f"mongodb+srv://{user}:{password}@robot-ucsd.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
-client = MongoClient(f"mongodb+srv://{user}:{password}@robotucsd_testing.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
-db = client["ROBOT-UCSD"]
+# db = client["ROBOT-UCSD"]
+db = client["ROBOTUCSD_TESTING"]
 
 ## 16/02/24 cambie los nombres de colecciones a las que se deben llamar
 facial_expressions = db["facial_expressions"] # Creation/Access of table Expressions
@@ -62,8 +62,7 @@ def fetch_from_db():
         facial_expressions_entries = []
         for entry in facial_expressions.find():
             facial_expressions_entries.append({"id": str(entry["_id"]), "label": entry["expression_name"],
-                                              "level": 0, "description": entry["description"], "id_in_robot": entry["id_in_robot"]})
-
+                                              "level": entry("level"), "description": entry["description"], "id_in_robot": entry["id_in_robot"]})
         data.append(facial_expressions_entries)
 
         body_gestures_entries = []
