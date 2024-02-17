@@ -23,20 +23,17 @@ user = os.getenv("MONGO_USR")
 password = os.getenv("password")
 
 # Access to database containing all data
-client = MongoClient(f"mongodb+srv://{user}:{password}@robot-ucsd.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
+### 16/02/24 cmabie @robot-ucsd a @robotucsd_testing, donde YO estoy haciendo pruebas
+# client = MongoClient(f"mongodb+srv://{user}:{password}@robot-ucsd.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
+client = MongoClient(f"mongodb+srv://{user}:{password}@robotucsd_testing.oqmkaj6.mongodb.net", tls=True, tlsAllowInvalidCertificates=True) 
 db = client["ROBOT-UCSD"]
 
+## 16/02/24 cambie los nombres de colecciones a las que se deben llamar
 facial_expressions = db["facial_expressions"] # Creation/Access of table Expressions
 body_gestures = db["body_gestures"]  # Creation/Access of table Movements
-
-# TODO: Esta es la de sounds (incluye la entrada de Hum)
-sounds = db["tones_of_voice"] # Creation/Access of table Tones of Voice
-
-# TODO: Esta es la de talk (tabla/coleccion con un solo elemento)
-verbal = db["speech_elements"]  # Creation/Access of table Speech
-
-# TODO: Esta es la de actions (copiar y pegar la de routines) y cambiar el nombre del array
-routines = db["routines"]  # Creation/Access of table Routines
+sounds = db["sounds"] # Creation/Access of table Tones of Voice
+verbal = db["talk"]  # Creation/Access of table Speech
+routines = db["actions"]  # Creation/Access of table Routines
 
 # Connect to MONGO CLIENT (LOCAL LEVEL)
 # client = MongoClient("127.0.0.1", 27017)
@@ -269,8 +266,7 @@ def fetch_routines_from_db():
 def fetch_routine_from_db(name):
     try:
         # Refresh of Routines collections
-        # TODO: Esta es la de actions (copiar y pegar la de routines) y cambiar el nombre del array
-        routines = db["routines"]
+        routines = db["actions"]
 
         # Get specific routine
         # Get BSON file that contains the
