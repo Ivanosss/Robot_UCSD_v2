@@ -11,8 +11,11 @@
               <ion-button class="my-button ion-text-left" size="small" color="light" *ngIf="i != opened_tab" (click)="tabClicked($event, i)"> 
                 <ion-label id="tabID_{{i}}" [ngStyle]="{'padding-left': '0px', 'float':'left'}">{{tab.tabName}}</ion-label>
               </ion-button>
-              <ion-item class="my-button-selected" size="small" color="white" *ngIf="i == opened_tab"> <!--Opened tab is highlighted-->
-                <ion-label id="tabID_{{i}}">{{tab.tabName}}</ion-label> 
+              <ion-item class="my-button-selected" size="small" color="white" *ngIf="i == opened_tab" (dblclick)="currentTabClicked($event, i)"> <!--Opened tab is highlighted-->
+                <ion-label id="tabID_{{i}}" *ngIf="!renaming_routine">{{tab.tabName}}</ion-label> <!--At the beggining is only a label-->
+                <ion-label id="tabID_{{i}}" *ngIf="renaming_routine"> <!--Change to text field when selected-->
+                  <input type="text" #renameInput class="rename_routine" value="{{tab.tabName}}" (blur)="handleBlur($event, i, renameInput.value)"> <!--blur is to save when out of focus-->
+                </ion-label>
                 <ion-icon (click)="eliminarBoton(i)" class="my-icon-close" slot="end"name="close-circle-outline" ></ion-icon>
               </ion-item>             
             </div></ion-col>
@@ -26,5 +29,4 @@
   
   <!--Buttons are on top of the actual view-->
   <ion-button size="large" color="medium" class="clear" (click)="onNewPressed()">NEW</ion-button>
-  <ion-button size="large" color="success" class="save" (click)="saveRoutine()">SAVE</ion-button>
 </ion-app>

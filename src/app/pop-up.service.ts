@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 import { PopUpComponent } from './pop-up/pop-up.component';
-import { PopUpSaveComponent } from './pop-up-save/pop-up-save.component';
 import { Routines, Send_block } from './models/routines.model';
 import { SendData } from './new-block.service';
 import { PopUpNameDuplicateComponent } from './pop-up-name-duplicate/pop-up-name-duplicate.component';
@@ -64,40 +63,13 @@ export class PopUpService {
     modal.onDidDismiss().then((result) => {
       if (result.role === 'dataSaved') { // Click on save in the pop-up
         this.blockUpdated.emit(result.data);
-      }
-    });
-
-    await modal.present();
-  }
-
-  async openModal_Save(routine:Routines) { 
-
-    const modal = await this.popOverController.create({ // Create save pop-up
-      component: PopUpSaveComponent,
-      componentProps: {
-        name: routine.name // Sends name in case there is one
-      },
-      cssClass: 'wide-modal',
-    });
-
-    modal.onDidDismiss().then((result) => { // Once is closed
-      if (result.role !== 'cancel' && result.role !== 'backdrop') { // If accepted
-        this.send_data_routine.routine = routine;
-        this.send_data_routine.routine.name = result.role;
+        this.send_data_routine.routine = this.current_routine;
         this.send_data_routine.type_def = "Show_Routine";
-        this.saveRoutineEvent.emit(this.send_data_routine); // Save the new routine
+        this.saveRoutineEvent.emit(this.send_data_routine);
       }
     });
 
     await modal.present();
-  }
-
-  ask_name(type:string, routine?:Routines){ // For save pop-up
-    if(type == "ask"){
-      this.NameRoutine.emit(); // Ask name to show on the pop-up
-    } else {
-      this.openModal_Save(routine); // Opens the modal
-    }
   }
 
   push_routine(routine: Routines){
