@@ -98,8 +98,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ### Running Ionic App
 
-- Open a console window in the project directory.
-- To connect to the cloud database, activate the environment:
+1. Open a console window in the project directory.
+2. To connect to the cloud database, activate the environment:
   - On Windows: 
   ```
   venv\Scripts\activate
@@ -108,11 +108,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   ```
   source venv/bin/activate
   ```
-- Connect to the cloud through the Python script:
+3. Connect to the cloud through the Python script:
   ```
   python backend\app.py
   ```
-- Without terminating this script, open a new console window and run `ionic serve` on the project file.
+4. Without terminating this script, open a new console window and run `ionic serve` on the project file.
 
 ## Usage
 

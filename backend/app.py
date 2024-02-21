@@ -61,38 +61,48 @@ def fetch_from_db():
 
         facial_expressions_entries = []
         for entry in facial_expressions.find():
-            facial_expressions_entries.append({"id": str(entry["_id"]), "label": entry["expression_name"],
-                                              "level": entry("level"), "description": entry["description"], "id_in_robot": entry["id_in_robot"]})
+            facial_expressions_entries.append({"id": str(entry["_id"]), 
+                                               "label": entry["expression_name"],
+                                              "level": entry("level"), 
+                                              "description": entry["description"], 
+                                              "id_in_robot": entry["id_in_robot"]})
         data.append(facial_expressions_entries)
 
         body_gestures_entries = []
         for entry in body_gestures.find():
-            body_gestures_entries.append({"id": str(
-                entry["_id"]), "label": entry["movement_name"], "description": entry["description"], "id_in_robot": entry["id_in_robot"]})
-
+            body_gestures_entries.append({"id": str(entry["_id"]), 
+                                          "label": entry["movement_name"], 
+                                          "description": entry["description"], 
+                                          "id_in_robot": entry["id_in_robot"]})
         data.append(body_gestures_entries)
 
         sounds_entries = []
         for entry in sounds.find():
-            sounds_entries.append({"id": str(
-                entry["_id"]), "label": entry["tone_name"], "description": entry["description"], "id_in_robot": entry["id_in_robot"]})
-
+            sounds_entries.append({"id": str(entry["_id"]), 
+                                   "label": entry["element_name"], 
+                                   "description": entry["description"], 
+                                   "utterance": entry["utterance"],
+                                   "id_in_robot": entry["id_in_robot"]})
         data.append(sounds_entries)
 
         verbal_entries = []
         for entry in verbal.find():
-            verbal_entries.append({"id": str(entry["_id"]), "label": entry["element_name"],
-                                           "description": entry["description"], "id_in_robot": entry["id_in_robot"], "utterance": entry["utterance"]})
-
+            verbal_entries.append({"id": str(entry["_id"]), 
+                                   "label": entry["element_name"],
+                                   "description": entry["description"], 
+                                   "id_in_robot": entry["id_in_robot"], 
+                                   "utterance": entry["utterance"]})
         data.append(verbal_entries)
 
         # Fetch documents from the routines collections in the local database
         # to send to the sidebar angular component
         routines_entries = []
         for entry in routines.find():
-            routines_entries.append({"id": str(entry["_id"]), "label": entry["label"], "user": entry["user"],
-                                    "last_modified": entry["last_modified"], "file": bson.decode(entry["file"])})
-
+            routines_entries.append({"id": str(entry["_id"]), 
+                                     "label": entry["label"], 
+                                     "user": entry["user"],
+                                     "last_modified": entry["last_modified"], 
+                                     "file": bson.decode(entry["file"])})
         data.append(routines_entries)
 
         # Return array in JSON format
