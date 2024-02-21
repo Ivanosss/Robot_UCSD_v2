@@ -74,7 +74,7 @@ export class BlockComponentComponent implements AfterViewInit {
     
     this.popUpService.saveRoutineEvent.subscribe((data) => {
       // When the save pop up is accepted it send the name from the pop-up to the curren routine
-      if(data.type_def === "Show_Routine"){ 
+      if(data.type_def === "Show_Routine" && data.routine.name != ""){ 
         // It already send the routine so now it's sending it to the db
         // Sending it to database
         // Call REST service to upload routine to database
