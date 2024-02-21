@@ -9,6 +9,7 @@ import yaml
 import os
 from dotenv import load_dotenv
 from io import BytesIO
+from flask_cors import CORS
 
 # The app serves as the publisher for the ROS nodes communication
 # import talker
@@ -16,6 +17,9 @@ from io import BytesIO
 # Main app
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+
+# UTILIZAR Flask_cors extension en el backend para habilitarlo ( sin la necesidad de la extension en firefox )
+CORS(app)
 
 # Connect to MONGO CLIENT (CLOUD LEVEL - for development only)
 load_dotenv() # Load .env file containing credentials
