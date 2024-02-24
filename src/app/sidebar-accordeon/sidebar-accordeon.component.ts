@@ -80,16 +80,16 @@ export class SidebarAccordeonComponent implements OnDestroy {
         (response) =>{
           // The response is an array that contains arrays that represent the
           // documents from the Routines database
-          this.routines = response[0];
-          this.routines.forEach(element => {
+          this.actions = response[0];
+          this.actions.forEach(element => {
             const block = new Routines_Blocks(element.id, element.label, element.description);
             block.color = "medium";
             incoming_routines.push(block);
           });
 
-          if(this.routines_blocks.length != incoming_routines.length){
+          if(this.actions_blocks.length != incoming_routines.length){
             // If different then update
-            this.routines_blocks = incoming_routines;
+            this.actions_blocks = incoming_routines;
           }
         });        
       });
@@ -103,16 +103,16 @@ export class SidebarAccordeonComponent implements OnDestroy {
   // Where response is saved
   facial_expresions: Facial_Expression[] = [];
   body_gestures: Body_Gestures[] = [];
-  tone_of_voice: Tone_Voice[] = [];
-  speech: Speech[] = [];
-  routines: Routines_Blocks[] = [];
+  sounds: Tone_Voice[] = [];
+  verbal: Speech[] = [];
+  actions: Routines_Blocks[] = [];
 
   // Where ts reads the blocks
   facial_expresions_blocks: Facial_Expression[] = [];
   body_gestures_blocks: Body_Gestures[] = [];
-  tone_of_voice_blocks: Tone_Voice[] = [];
-  speech_blocks: Speech[] = [];
-  routines_blocks: Routines_Blocks[] = [];
+  sounds_blocks: Tone_Voice[] = [];
+  verbal_blocks: Speech[] = [];
+  actions_blocks: Routines_Blocks[] = [];
 
   // Pop-over is open or not
   isOpen = false;
@@ -129,6 +129,7 @@ export class SidebarAccordeonComponent implements OnDestroy {
     this.rs.read_db()
     .subscribe(
       (response) => {
+        console.log(response)
         // The response is an array of arrays.
         // Each array corresponds to all the documents fetched from the databases
 
@@ -152,33 +153,34 @@ export class SidebarAccordeonComponent implements OnDestroy {
 
         // TODO Cambiar nombre a arrays para que haga match con los arrays de python
         // Third array corresponds to the sounds documents
-        this.tone_of_voice = response[2];
+        this.sounds = response[2];
 
-        this.tone_of_voice.forEach(element => {
+        this.sounds.forEach(element => {
           const block = new Tone_Voice(element.id, element.label, element.description, element.id_in_robot);
           block.color = "tertiary";
-          this.tone_of_voice_blocks.push(block);
+          this.sounds_blocks.push(block);
         });
         
         // Fourth array corresponds to the verbal documents
-        this.speech = response[3];
+        this.verbal = response[3];
 
-        this.speech.forEach(element => {
+        this.verbal.forEach(element => {
           const block = new Speech(element.id, element.label, element.description, element.id_in_robot, element.utterance);
           block.color = "warning";
           if(element.label != "Talk"){
             console.log(element.label);
-            this.speech_blocks.push(block);
+            this.verbal_blocks.push(block);
           } else {
             this.talk = block;
           }
         });
 
         // Fifth array corresponds to the routines documents
-        this.routines = response[4];
-        this.routines.forEach(element => {
+        this.actions = response[4];
+        this.actions.forEach(element => {
           const block = new Routines_Blocks(element.id, element.label, element.description);
           block.color = "medium";
+          this.actions_blocks.push(block)
         });
       },
       (error) => {
@@ -264,9 +266,9 @@ export class SidebarAccordeonComponent implements OnDestroy {
     )
 
     let i = 0;
-    for(let item in this.routines_blocks){ // Delete the routine from the sideabar
-      if(this.routines_blocks[item].label == this.pop_over_block.label){
-        this.routines_blocks.splice(i, 1); // Splice = Pop in i posisition
+    for(let item in this.actions_blocks){ // Delete the routine from the sideabar
+      if(this.actions_blocks[item].label == this.pop_over_block.label){
+        this.actions_blocks.splice(i, 1); // Splice = Pop in i posisition
       }
       i++;
     }

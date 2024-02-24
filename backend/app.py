@@ -37,7 +37,7 @@ facial_expressions = db["facial_expressions"] # Creation/Access of table Express
 body_gestures = db["body_gestures"]  # Creation/Access of table Movements
 sounds = db["sounds"] # Creation/Access of table Tones of Voice
 verbal = db["talk"]  # Creation/Access of table Speech
-routines = db["actions"]  # Creation/Access of table Routines
+actions = db["actions"]  # Creation/Access of table Routines
 
 # Connect to MONGO CLIENT (LOCAL LEVEL)
 # client = MongoClient("127.0.0.1", 27017)
@@ -67,11 +67,12 @@ def fetch_from_db():
         for entry in facial_expressions.find():
             facial_expressions_entries.append({"id": str(entry["_id"]), 
                                                "label": entry["expression_name"],
-                                              "level": entry("level"), 
+                                              "level": entry["level"], 
                                               "description": entry["description"], 
                                               "id_in_robot": entry["id_in_robot"]})
+            
         data.append(facial_expressions_entries)
-
+        
         body_gestures_entries = []
         for entry in body_gestures.find():
             body_gestures_entries.append({"id": str(entry["_id"]), 
@@ -100,14 +101,14 @@ def fetch_from_db():
 
         # Fetch documents from the routines collections in the local database
         # to send to the sidebar angular component
-        routines_entries = []
-        for entry in routines.find():
-            routines_entries.append({"id": str(entry["_id"]), 
+        actions_entries = []
+        for entry in actions.find():
+            actions_entries.append({"id": str(entry["_id"]), 
                                      "label": entry["label"], 
                                      "user": entry["user"],
                                      "last_modified": entry["last_modified"], 
                                      "file": bson.decode(entry["file"])})
-        data.append(routines_entries)
+        data.append(actions_entries)
 
         # Return array in JSON format
         return jsonify(data)
@@ -126,7 +127,7 @@ def save_routine(replace):
         try:
             # Look for the given name for the routine in the localdatabase, if not found, insert routine
             # as a new document
-            if (routines.find_one({"label": routine["routine"]["name"]})) is None:
+            if (actions.find_one({"label": routine["routine"]["name"]})) is None:
                 db_routine = {}
 
                 db_routine["user"] = "TESTUSER"
@@ -140,14 +141,14 @@ def save_routine(replace):
                 db_routine["file"] = bson.encode(file)
                 db_routine["last_modified"] = datetime.now(tz=dt.timezone.utc)
 
-                routines.insert_one(db_routine)
+                actions.insert_one(db_routine)
 
                 # Return response in JSON format
                 return jsonify({"Status" : "Insert completed", "Code" : 0})
         
             # If routine name is found and the user indicates that they want to update the existing 
             # routine, replace it with the updated fields
-            elif (routines.find_one({"label": routine["routine"]["name"]})) is not None and replace == "1": 
+            elif (actions.find_one({"label": routine["routine"]["name"]})) is not None and replace == "1": 
                 query = {"label" : routine["routine"]["name"]}
                 new_data = {} 
 
@@ -159,14 +160,14 @@ def save_routine(replace):
                 new_data["file"] = bson.encode(file)
                 new_data["last_modified"] = datetime.now(tz=dt.timezone.utc)
 
-                routines.update_one(query, {"$set" : new_data})
+                actions.update_one(query, {"$set" : new_data})
 
                 # Return response in JSON format
                 return jsonify({"Status" : "Replace completed", "Code" : 0})
             
             # If routine name is found, alert the user a routine with the given name already
             # exists
-            elif (routines.find_one({"label": routine["routine"]["name"]})) is not None:
+            elif (actions.find_one({"label": routine["routine"]["name"]})) is not None:
                 # Return response in JSON format
                 return jsonify({"Status" : "Routine already exists", "Code" : 1})
         except Exception as e:
@@ -178,7 +179,7 @@ def save_routine(replace):
 def download_routine(id):
     try:
         # Find the routine document the user wants to download 
-        routine = routines.find_one({"_id": ObjectId(id)})
+        routine = actions.find_one({"_id": ObjectId(id)})
 
         # Get the BSON file from the document and decode it
         routine = bson.decode(routine["file"])
@@ -202,7 +203,7 @@ def get_most_recent_routine():
         struct = [] # Array of arrays containing the structure of the behavior blocks on the routine
 
         # Find most recent routine in database and decode it
-        recent = routines.find_one(sort=[('last_modified', -1)])        
+        recent = actions.find_one(sort=[('last_modified', -1)])        
         name = recent["label"]
         data.append([name])
 
@@ -229,8 +230,8 @@ def delete_routine(id):
     try:
         # Find by name the routine the user wants to delete
         # and delete it
-        if (routines.find_one({"_id": ObjectId(id)})) is not None:
-            routines.delete_one({"_id": ObjectId(id)})
+        if (actions.find_one({"_id": ObjectId(id)})) is not None:
+            actions.delete_one({"_id": ObjectId(id)})
 
              # Return response in JSON format
             return jsonify({"Status" : "Delete completed"})
@@ -259,15 +260,15 @@ def load_current_routine_txt():
 def fetch_routines_from_db():
     try:
         # Refresh of Routines collection
-        routines = db["routines"]
+        actions = db["actions"]
         data = [] # Array to store all contents in the collection
 
         # Get all documents found in the collection
         # Provide front end with only ID and label
-        routines_entries = []
-        for entry in routines.find():
-            routines_entries.append({"id": str(entry["_id"]), "label": entry["label"]})
-        data.append(routines_entries)
+        actions_entries = []
+        for entry in actions.find():
+            actions_entries.append({"id": str(entry["_id"]), "label": entry["label"]})
+        data.append(actions_entries)
 
         # Return array in JSON format
         return jsonify(data)
@@ -279,12 +280,12 @@ def fetch_routines_from_db():
 def fetch_routine_from_db(name):
     try:
         # Refresh of Routines collections
-        routines = db["actions"]
+        actions = db["actions"]
 
         # Get specific routine
         # Get BSON file that contains the
         # data of the blocks that make up the routine
-        routine = routines.find_one({"label": name})
+        routine = actions.find_one({"label": name})
         routine = bson.decode(routine["file"])
         
         # Append all data to array

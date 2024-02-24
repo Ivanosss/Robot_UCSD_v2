@@ -97,7 +97,7 @@
             <!--Inside of the sounds accordeon-->
             <div slot="content">
               <ion-list class="my-componente2">
-                <div *ngFor="let item of speech_blocks; let index" 
+                <div *ngFor="let item of sounds_blocks; let index" 
                 draggable="true"
                 (dragend)="onDragEnd($event, item)"
                 title="{{ item.description }}"
@@ -127,7 +127,7 @@
       <!--Inside of the routines accordeon-->
       <div slot="content">
           <ion-list class="my-componente2">
-            <div *ngFor="let item of routines_blocks; index as i"
+            <div *ngFor="let item of actions_blocks; index as i"
             draggable="true"
             (dragend)="onDragEnd($event, item)"
             title="{{ item.description }}"
