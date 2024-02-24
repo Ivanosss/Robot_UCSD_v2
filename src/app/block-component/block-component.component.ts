@@ -156,6 +156,7 @@ export class BlockComponentComponent implements AfterViewInit {
               });
               i+=1;
             });
+            console.log(routine); //<-------------------------------- PRINT ROUTINE WHEN OPENNING TAB
             this.tabService.addTabToContainer(block, routine); // Add new container and push new_routine
           },
           (error) => {
@@ -339,8 +340,8 @@ export class BlockComponentComponent implements AfterViewInit {
 
       return false;
 
-    } else if (this.current_block.name == this.current_routine.name){
-      // You cant add the current routine to the main routine (or inception)
+    } else if (this.current_block.name == this.current_routine.name || this.current_block.parent_routines.indexOf(this.current_routine.name) > -1){
+      // You cant add the current routine to the main routine (or inception) or a parent routine
       this.setOpenName(true);
       return false;
 
@@ -421,9 +422,42 @@ export class BlockComponentComponent implements AfterViewInit {
       if(data.event.pageY > this.cellPositions[this.cellPositions.length - 1].center_y + this.cellPositions[0].height/2){
         this.current_routine.array_block.push([this.current_block]);
         this.delete_previous(position, rearenge);
+        if (this.current_block.class == "routine"){
+          this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
+          let incoming_routine = new Routines();
+          // Update the parent routine in subroutine
+          this.rs.get_routine(this.current_block.name).subscribe( 
+            (response) => {
+              incoming_routine.name = this.current_block.name; // 
+              console.log(incoming_routine);
+              let i = 0;
+              response.forEach(element => { // Add blocks to the routine
+                incoming_routine.array_block.push([])
+                element.forEach(block_item => {
+                  let block_i = new Send_block();
+                  block_i.class = block_item.class;
+                  block_i.name = block_item.name;
+                  block_i.level = block_item.level;
+                  block_i.talk = block_item.talk;
+                  block_i.clear = block_item.clear;
+                  incoming_routine.array_block[i].push(block_i);
+                });
+                i+=1;
+              });
+              
+            },
+            (error) => {
+              console.log(error);
+            }
+          )
+          this.send_data_routine.routine = incoming_routine// Get the routine of that block
+          //this.send_data_routine.routine.name = 
+          this.send_data_routine.type_def = "Show_Routine";
+          this.send_data_routine.routine.parent_routines = this.current_block.parent_routines;
+          this.popUpService.saveRoutineEvent.emit(this.send_data_routine); // Overwrite that block
+        }
         return true;
       }
-
       return false;
     }
   }

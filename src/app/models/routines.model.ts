@@ -5,6 +5,7 @@ export class Send_block { // In rutine
     talk: string = "";
     clear: string= "";
     tone_voice: string;
+    parent_routines: Array<string> = []; //In case its a routine
   
     get_color(){
         
@@ -44,5 +45,5 @@ export class Routines { // Full collection of Send_Blocks
     name: string = "";
     description: string = "";
     array_block: Array<Array<Send_block>> = [];
-      
+    parent_routines: Array<string> = [];
   }
