@@ -123,7 +123,8 @@ def save_routine(replace):
 
                 db_routine["file"] = bson.encode(file)
                 db_routine["last_modified"] = datetime.now(tz=dt.timezone.utc)
-
+                db_routine["parent_routine"] = routine["routine"]["parent_routine"]
+                
                 routines.insert_one(db_routine)
 
                 # Return response in JSON format
