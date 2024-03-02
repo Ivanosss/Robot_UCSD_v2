@@ -89,7 +89,8 @@ def fetch_from_db():
         routines_entries = []
         for entry in routines.find():
             routines_entries.append({"id": str(entry["_id"]), "label": entry["label"], "user": entry["user"],
-                                    "last_modified": entry["last_modified"], "file": bson.decode(entry["file"])})
+                                    "last_modified": entry["last_modified"], "file": bson.decode(entry["file"]),
+                                    "parent_routines": entry["parent_routines"]})
 
         data.append(routines_entries)
 
@@ -106,7 +107,6 @@ def save_routine(replace):
     # JSON data of a routine
     if request.method == 'POST':
         routine = loads(request.data)
-        print(replace)
         try:
             # Look for the given name for the routine in the localdatabase, if not found, insert routine
             # as a new document
@@ -123,7 +123,7 @@ def save_routine(replace):
 
                 db_routine["file"] = bson.encode(file)
                 db_routine["last_modified"] = datetime.now(tz=dt.timezone.utc)
-                db_routine["parent_routine"] = routine["routine"]["parent_routine"]
+                db_routine["parent_routines"] = routine["routine"]["parent_routines"]
                 
                 routines.insert_one(db_routine)
 
@@ -187,10 +187,12 @@ def get_most_recent_routine():
         struct = [] # Array of arrays containing the structure of the behavior blocks on the routine
 
         # Find most recent routine in database and decode it
-        recent = routines.find_one(sort=[('last_modified', -1)])        
-        name = recent["label"]
-        data.append([name])
+        recent = routines.find_one(sort=[('last_modified', -1)])       
 
+        name = recent["label"]
+        parent_routines = recent["parent_routines"]
+
+        data.append([name])
         recent = bson.decode(recent["file"])
 
         # Append the arrays of behavior blocks,
@@ -200,6 +202,7 @@ def get_most_recent_routine():
             struct.append(v)
         
         data.append(struct)
+        data.append([parent_routines])
 
         # Return response in JSON format
         return jsonify(data)
@@ -251,7 +254,10 @@ def fetch_routines_from_db():
         # Provide front end with only ID and label
         routines_entries = []
         for entry in routines.find():
-            routines_entries.append({"id": str(entry["_id"]), "label": entry["label"]})
+            routines_entries.append({"id": str(entry["_id"]), "label": entry["label"], "user": entry["user"],
+                                    "last_modified": entry["last_modified"], "file": bson.decode(entry["file"]),
+                                    "parent_routines": entry["parent_routines"]})
+            # routines_entries.append({"id": str(entry["_id"]), "label": entry["label"]})
         data.append(routines_entries)
 
         # Return array in JSON format
@@ -270,12 +276,15 @@ def fetch_routine_from_db(name):
         # Get BSON file that contains the
         # data of the blocks that make up the routine
         routine = routines.find_one({"label": name})
+        parent_routines = routine["parent_routines"]
         routine = bson.decode(routine["file"])
         
         # Append all data to array
         struct = []
         for k, v in routine.items():
             struct.append(v)
+
+        struct.append(parent_routines)
             
         # Return array in JSON format
         return jsonify(struct)
