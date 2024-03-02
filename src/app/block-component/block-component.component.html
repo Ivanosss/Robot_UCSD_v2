@@ -28,11 +28,12 @@
       <ion-item-group class="group_obj" draggable="true"
       (dragend)="dragFuncion($event, undefined, block, true)" *ngIf="j==0" (click)="openPopUp(block, $event)">
         <!--First semi-circle on top but without the circle to the right-->
-        <ion-icon src="../../assets/semi_cropped.svg" [ngStyle]="{'height':'15px', 'width':'30px', 'fill': 'var(--ion-color-'+block.get_color()+')', 'float':'left', 'margin-top': '-14px', 'margin-left':'9px'}"></ion-icon>
+        <ion-icon src="../../assets/semi_cropped.svg" [ngStyle]="{'height':'15px', 'width':'30px', 'fill': 'var(--ion-color-'+block.get_color()+')', 'float':'left', 'margin-top': '-4px', 'margin-left':'9px'}"></ion-icon>
         <div [ngClass]="{'red': block.get_color() === 'danger', 'yellow' : block.get_color() === 'warning', 'green' : block.get_color() === 'success', 'medium' : block.get_color() === 'medium' }">
-          <div id="text"
-          size="small">
-          <ion-label>{{ block.name }}</ion-label> <!--Actual square-->
+          <div id="text" size="small">
+          <ion-label [ngStyle]="{'height':'1000%'}">{{ block.name }}</ion-label> <!--Actual square-->
+          <br *ngIf="block.name == 'Talk'">
+          <ion-input *ngIf="block.name == 'Talk'" label-placement="floating" fill="outline" placeholder="Enter text" [(ngModel)]="block.talk" (ionBlur)="handleBlur($event)"></ion-input>
           </div>
         </div>
         <!--Square-->
@@ -48,15 +49,17 @@
       (dragend)="dragFuncion($event, undefined, block, true)" *ngIf="j!=0" (click)="openPopUp(block, $event)">
         <ion-grid [ngStyle]="{'margin-left':'-15px', 'padding':'0', 'margin-right':'-5px', 'padding-top':'5px', 'margin-bottom':'-3px'}">
           <ion-row>
-            <ion-col [ngStyle]="{'pading':'0', 'margin-right':'-10px'}">
+            <ion-col [ngStyle]="{'pading':'0', 'margin-right':'-10px', 'max-width':'25px'}">
               <ion-icon src="../../assets/semi_rotate_2.svg" [ngStyle]="{'fill': 'var(--ion-color-'+current_routine.array_block[i][j-1].get_color()+')', 'background-color': 'var(--ion-color-'+current_routine.array_block[i][j].get_color()+')', 'float':'left', 'width':'15px', 'height':'30px'}"></ion-icon>
-              <ion-icon src="../../assets/square-filled-geometric-shape-svgrepo-com.svg" [ngStyle]="{'fill': 'var(--ion-color-'+block.get_color()+')', 'width':'calc(100%)', 'stroke':'var(--ion-color-'+block.get_color()+')'}"></ion-icon>
+              <ion-icon src="../../assets/square-filled-geometric-shape-svgrepo-com.svg" [ngStyle]="{'fill': 'var(--ion-color-'+block.get_color()+')', 'width':'calc(100%)', 'stroke':'var(--ion-color-'+block.get_color()+')', 'height':'calc(100% - 30px)'}"></ion-icon>
             </ion-col>
             <ion-col [ngStyle]="{'pading':'0'}">
               <div [ngClass]="{'red_2': block.get_color() === 'danger', 'yellow_2' : block.get_color() === 'warning', 'green_2' : block.get_color() === 'success', 'medium_2' : block.get_color() === 'medium'}">
                 <div id="text"
                 size="small">
                 <ion-label>{{ block.name }}</ion-label>
+                <br *ngIf="block.name == 'Talk'">
+                <ion-input *ngIf="block.name == 'Talk'" label-placement="floating" fill="outline" placeholder="Enter text" [(ngModel)]="block.talk" (ionBlur)="handleBlur($event)"></ion-input>
                 </div>
               </div>
               <ion-icon src="../../assets/square-filled-geometric-shape-svgrepo-com.svg" [ngStyle]="{'height': '30px!important', 'fill': 'var(--ion-color-'+block.get_color()+')', 'width':'calc(100% + 14px)', 'stroke':'none', 'margin-top':'-14px', 'margin-left':'-14px'}"></ion-icon>
