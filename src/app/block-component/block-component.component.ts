@@ -66,11 +66,49 @@ export class BlockComponentComponent implements AfterViewInit {
       if(dropped){
         this.openPopUp(this.current_block); // When dropped open the corresponding pop-up
       }
+
+      if (this.current_block.class == "routine"){
+        this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
+        console.log(this.current_routine); // <------- Checking routine
+        let incoming_routine = new Routines();
+        // Update the parent routine in subroutine
+        this.rs.get_routine(this.current_block.name).subscribe( 
+          (response) => {
+            incoming_routine.name = this.current_block.name; // 
+            console.log(incoming_routine);
+            let i = 0;
+            response.forEach(element => { // Add blocks to the routine
+              incoming_routine.array_block.push([])
+              element.forEach(block_item => {
+                let block_i = new Send_block();
+                block_i.class = block_item.class;
+                block_i.name = block_item.name;
+                block_i.level = block_item.level;
+                block_i.talk = block_item.talk;
+                block_i.clear = block_item.clear;
+                incoming_routine.array_block[i].push(block_i);
+              });
+              i+=1;
+            });
+            console.log("HI")
+            let temp: SendDataRoutine = new SendDataRoutine();
+            console.log(incoming_routine)
+            temp.routine = incoming_routine// Get the routine of that block
+            temp.type_def = "Show_Routine";
+            temp.routine.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name]);
+            this.popUpService.saveRoutineEvent.emit(temp); // Overwrite that block
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      }
       
       // Save the routine when adding block
       this.send_data_routine.routine = this.current_routine;
       this.send_data_routine.type_def = "Show_Routine";
       this.popUpService.saveRoutineEvent.emit(this.send_data_routine);
+      console.log("Current Routine", this.current_routine)
     });
     
     this.popUpService.saveRoutineEvent.subscribe((data) => {
@@ -92,7 +130,7 @@ export class BlockComponentComponent implements AfterViewInit {
                 }
               )
             }
-            popUpService.result_ready(data.routine); // Send name to app for the tab
+            //popUpService.result_ready(data.routine); // Send name to app for the tab
           },
           (error) => {
             console.log(error);
@@ -236,9 +274,9 @@ export class BlockComponentComponent implements AfterViewInit {
           this.dif = rect.width;
           const cellPosition: { center_x: number; center_y: number, length: number, height:number } = {
             center_x: rect.left + rect.width / 2,
-            center_y: rect.top + (this.rowPositions[row]) / 2,
+            center_y: rect.top + (this.rowPositions[row] - 10) / 2,
             length: rect.width,
-            height: this.rowPositions[row],
+            height: this.rowPositions[row] - 10,
           };
 
           // Add the cell's position to the array
@@ -347,27 +385,13 @@ export class BlockComponentComponent implements AfterViewInit {
       
       // Drag is Outside of bounds
       if(rearenge){ // Drag a block outside the area bound
-        this.delete_previous(position, rearenge); // Delete it
-      }
-
-      return false;
-
-    } else if (this.current_block.name == this.current_routine.name || this.current_block.parent_routines.indexOf(this.current_routine.name) > -1){
-      // You cant add the current routine to the main routine (or inception) or a parent routine
-      this.setOpenName(true);
-      return false;
-
-    } else {
-      if(this.cellPositions.length == 0 && this.current_routine.array_block.length == 0){
-        // There's no blocks currently
-        this.current_routine.array_block[0] = [this.current_block]; // Just add it
-        if (this.current_block.class == "routine"){ // Check if its routine
-          this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
+        if(this.current_block.class == "routine"){
           let incoming_routine = new Routines();
           // Update the parent routine in subroutine
           this.rs.get_routine(this.current_block.name).subscribe( 
             (response) => {
               incoming_routine.name = this.current_block.name; // 
+              console.log(incoming_routine);
               let i = 0;
               response.forEach(element => { // Add blocks to the routine
                 incoming_routine.array_block.push([])
@@ -382,22 +406,44 @@ export class BlockComponentComponent implements AfterViewInit {
                 });
                 i+=1;
               });
-              
+              let temp: SendDataRoutine = new SendDataRoutine();
+              temp.routine = incoming_routine// Get the routine of that block
+              temp.type_def = "Show_Routine";
+              let all_routines = this.current_routine.parent_routines.concat([this.current_routine.name]); // Remove all parent routines
+              for(let rout of all_routines){
+                const index = temp.routine.parent_routines.indexOf(rout, 0);
+                if (index > -1) {
+                  temp.routine.parent_routines.splice(index, 1);
+                }
+              }
+              this.popUpService.saveRoutineEvent.emit(temp); // Overwrite that block
             },
             (error) => {
               console.log(error);
             }
           )
-          this.send_data_routine.routine = incoming_routine// Get the routine of that block
-          this.send_data_routine.type_def = "Show_Routine";
-          this.send_data_routine.routine.parent_routines = this.current_block.parent_routines;
-          console.log(this.send_data_routine.routine)
-          this.popUpService.saveRoutineEvent.emit(this.send_data_routine); // Overwrite that block
         }
+        this.delete_previous(position, rearenge); // Delete it
+      }
+
+      return false;
+
+    } else if (this.current_block.name == this.current_routine.name || this.current_block.parent_routines.indexOf(this.current_routine.name) > -1){
+      // You cant add the current routine to the main routine (or inception) or a parent routine
+      this.setOpenName(true);
+      return false;
+
+    } else {
+      if(this.allPositions.length == 0 && this.current_routine.array_block.length == 0){
+        // There's no blocks currently
+        this.current_routine.array_block[0] = [this.current_block]; // Just add it
         return true;
       } else { // It has more than 1 block
         let blocks = 0
         for (const num of this.cellPositions) {
+          console.log(num.center_y)
+          console.log(num.height/2)
+          console.log(data.event.pageY)
           if(num.center_y + num.height/2 > data.event.pageY){
             if(num.center_y - num.height/2 < data.event.pageY){
 
@@ -467,41 +513,6 @@ export class BlockComponentComponent implements AfterViewInit {
       if(data.event.pageY > this.cellPositions[this.cellPositions.length - 1].center_y + this.cellPositions[this.cellPositions.length - 1].height/2){
         this.current_routine.array_block.push([this.current_block]);
         this.delete_previous(position, rearenge);
-        if (this.current_block.class == "routine"){
-          this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
-          console.log(this.current_routine); // <------- Checking routine
-          let incoming_routine = new Routines();
-          // Update the parent routine in subroutine
-          this.rs.get_routine(this.current_block.name).subscribe( 
-            (response) => {
-              incoming_routine.name = this.current_block.name; // 
-              console.log(incoming_routine);
-              let i = 0;
-              response.forEach(element => { // Add blocks to the routine
-                incoming_routine.array_block.push([])
-                element.forEach(block_item => {
-                  let block_i = new Send_block();
-                  block_i.class = block_item.class;
-                  block_i.name = block_item.name;
-                  block_i.level = block_item.level;
-                  block_i.talk = block_item.talk;
-                  block_i.clear = block_item.clear;
-                  incoming_routine.array_block[i].push(block_i);
-                });
-                i+=1;
-              });
-              
-            },
-            (error) => {
-              console.log(error);
-            }
-          )
-          this.send_data_routine.routine = incoming_routine// Get the routine of that block
-          //this.send_data_routine.routine.name = 
-          this.send_data_routine.type_def = "Show_Routine";
-          this.send_data_routine.routine.parent_routines = this.current_block.parent_routines;
-          this.popUpService.saveRoutineEvent.emit(this.send_data_routine); // Overwrite that block
-        }
         return true;
       }
       return false;

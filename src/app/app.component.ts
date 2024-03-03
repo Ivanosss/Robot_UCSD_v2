@@ -91,11 +91,6 @@ export class AppComponent implements OnInit {
         this.opened_tab = this.routines.length - 1;
         console.log("Opened tab", this.opened_tab);
       });
-
-      this.popUpService.results_ready.subscribe((routine) => { 
-        // Once the results on saved are ready, change the tab name for the new routine name
-        this.tabDataList[this.opened_tab].tabName = routine.name;
-      })
   }
   
   async ngOnInit() {
