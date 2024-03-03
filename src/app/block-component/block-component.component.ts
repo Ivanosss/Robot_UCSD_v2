@@ -32,6 +32,7 @@ export class BlockComponentComponent implements AfterViewInit {
 
   cellPositions: { center_x: number; center_y: number, length: number, height: number}[] = [];
   allPositions: { center_x: number; center_y: number, length: number, height: number}[] = [];
+  rowPositions: number[] = [];
   scrollPosition = 0;
 
   startRect = new DOMRect;
@@ -209,13 +210,23 @@ export class BlockComponentComponent implements AfterViewInit {
 
     this.cellPositions = [];
     this.allPositions = [];
+    this.rowPositions = [];
 
     if (grid) {
       // Get all cell elements within the grid
+
+      const rows = grid.querySelectorAll('ion-row');
+      rows.forEach((row) => {
+        const rect = row.getBoundingClientRect();
+        this.rowPositions.push(rect.height)
+      })
+
       const cells = grid.querySelectorAll('ion-col');
 
       // Initialize an array to store cell positions
       // Loop through each number cell and calculate its position
+
+      let row = 0;
       
       cells.forEach((cell) => {
         if(cell.id === 'num'){
@@ -224,13 +235,14 @@ export class BlockComponentComponent implements AfterViewInit {
           this.dif = rect.width;
           const cellPosition: { center_x: number; center_y: number, length: number, height:number } = {
             center_x: rect.left + rect.width / 2,
-            center_y: rect.top + rect.height / 2,
+            center_y: rect.top + (this.rowPositions[row]) / 2,
             length: rect.width,
-            height: rect.height,
+            height: this.rowPositions[row],
           };
 
           // Add the cell's position to the array
           this.cellPositions.push(cellPosition);
+          row += 1;
         } else if(cell.id == "block"){
           // Calculate the cell's position relative to the grid container
           const rect = cell.getBoundingClientRect();
@@ -246,7 +258,6 @@ export class BlockComponentComponent implements AfterViewInit {
           this.allPositions.push(cellPosition);
         }
       });
-
       // Now, cellPositions contains the positions of all cells in the grid
 
     } else {
@@ -349,6 +360,39 @@ export class BlockComponentComponent implements AfterViewInit {
       if(this.cellPositions.length == 0 && this.current_routine.array_block.length == 0){
         // There's no blocks currently
         this.current_routine.array_block[0] = [this.current_block]; // Just add it
+        if (this.current_block.class == "routine"){ // Check if its routine
+          this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
+          let incoming_routine = new Routines();
+          // Update the parent routine in subroutine
+          this.rs.get_routine(this.current_block.name).subscribe( 
+            (response) => {
+              incoming_routine.name = this.current_block.name; // 
+              let i = 0;
+              response.forEach(element => { // Add blocks to the routine
+                incoming_routine.array_block.push([])
+                element.forEach(block_item => {
+                  let block_i = new Send_block();
+                  block_i.class = block_item.class;
+                  block_i.name = block_item.name;
+                  block_i.level = block_item.level;
+                  block_i.talk = block_item.talk;
+                  block_i.clear = block_item.clear;
+                  incoming_routine.array_block[i].push(block_i);
+                });
+                i+=1;
+              });
+              
+            },
+            (error) => {
+              console.log(error);
+            }
+          )
+          this.send_data_routine.routine = incoming_routine// Get the routine of that block
+          this.send_data_routine.type_def = "Show_Routine";
+          this.send_data_routine.routine.parent_routines = this.current_block.parent_routines;
+          console.log(this.send_data_routine.routine)
+          this.popUpService.saveRoutineEvent.emit(this.send_data_routine); // Overwrite that block
+        }
         return true;
       } else { // It has more than 1 block
         let blocks = 0
@@ -390,9 +434,9 @@ export class BlockComponentComponent implements AfterViewInit {
               if(break_var == 1){
                 break;
               }
-
+              
               for (let coord of this.allPositions) { // Calculate where in the row it should be added
-                if (coord.center_y < num.center_y + 1 && coord.center_y > num.center_y - 1){
+                if (coord.center_y < num.center_y + 10 && coord.center_y > num.center_y - 10){
                   if(coord.center_x > data.event.pageX){
                     break;
                   }
@@ -419,11 +463,12 @@ export class BlockComponentComponent implements AfterViewInit {
       }
 
       // Dropped in new row
-      if(data.event.pageY > this.cellPositions[this.cellPositions.length - 1].center_y + this.cellPositions[0].height/2){
+      if(data.event.pageY > this.cellPositions[this.cellPositions.length - 1].center_y + this.cellPositions[this.cellPositions.length - 1].height/2){
         this.current_routine.array_block.push([this.current_block]);
         this.delete_previous(position, rearenge);
         if (this.current_block.class == "routine"){
           this.current_block.parent_routines = this.current_routine.parent_routines.concat([this.current_routine.name])
+          console.log(this.current_routine); // <------- Checking routine
           let incoming_routine = new Routines();
           // Update the parent routine in subroutine
           this.rs.get_routine(this.current_block.name).subscribe( 
@@ -498,6 +543,12 @@ export class BlockComponentComponent implements AfterViewInit {
 
   setOpenName(isOpen: boolean) {
     this.isToastOpenName = isOpen;
+  }
+
+  handleBlur(event:Event){ // Save routine when user updates a parameter  
+    this.send_data_routine.routine = this.current_routine;
+    this.send_data_routine.type_def = "Show_Routine";
+    this.popUpService.saveRoutineEvent.emit(this.send_data_routine);
   }
 }
 
