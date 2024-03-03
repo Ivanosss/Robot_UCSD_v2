@@ -38,7 +38,7 @@ $colors: (
 .grid-cell {
   //padding: -10px; /* Add padding for spacing */
   //width: 100%;
-  //height: 100%;
+  height: calc(box-sizing + 40px);
   //width: (box-sizing + 5000px)!important;
   align-items: left; /* Center text within cells */
   //color: #6002ed;
@@ -60,10 +60,12 @@ $colors: (
   align-items: left; /* Center text within cells */
   //color: #6002ed;
   text-align: center;
-  size: fit-content;
+  //size: fit-content;
   //padding-bottom: -50px;
   //border: 1px solid;
   height: 100%; /* Set height to 100% */
+  margin-top: 0px;
+  padding: 0px;
 }
 
 // Colors / classes for the puzzle pieces
@@ -74,6 +76,7 @@ $colors: (
   width: fit-content;
   color: black;
   min-width: 50px !important;
+  height: calc(100% - 24px);
 }
 
 .green{
@@ -83,6 +86,7 @@ $colors: (
   width: fit-content;
   color: black;
   min-width: 50px !important;
+  height: calc(100% - 24px);
 }
 
 .yellow{
@@ -92,6 +96,7 @@ $colors: (
   width: fit-content;
   color: black;
   //min-width: 50px !important;
+  height: calc(100% - 24px);
 }
 
 .medium{
@@ -101,23 +106,28 @@ $colors: (
   width: fit-content;
   color: black;
   min-width: 50px !important;
+  height: calc(100% - 24px);
 }
 
 .red_2{
   background: var(--ion-color-danger);
   padding: 10px;
-  width: fit-content;
+  width: stretch !important;
   color: black;
-  margin-bottom:-6px;
+  margin-bottom:-15px;
   min-width: 50px !important;
+  flex-grow: 1;
+  height: calc(100% - 20px);
 }
 
 .green_2{
   background: var(--ion-color-success);
   padding: 10px;
-  width: fit-content;
+  width: stretch !important;
   color: black;
-  margin-bottom:-6px;
+  margin-bottom:-15px;
+  flex-grow: 1;
+  height: calc(100% - 20px);
 }
 
 .yellow_2{
@@ -125,17 +135,20 @@ $colors: (
   padding: 10px;
   width: stretch !important;
   color: black;
-  margin-bottom:-6px;
+  margin-bottom:-15px;
   min-width: 50px !important;
   flex-grow: 1;
+  height: calc(100% - 20px);
 }
 
 .medium_2{
   background: var(--ion-color-medium);
   padding: 10px;
   color: black;
-  margin-bottom:-6px;
-  width: fit-content;
+  margin-bottom:-15px;
+  width: stretch !important;
+  flex-grow: 1;
+  height: calc(100% - 20px);
 }
 
 br {
@@ -145,8 +158,4 @@ br {
 .input {
   width: fit-content !important;
   min-width: 100px;
-}
-
-.content-wrapper {
-  flex-grow: 1; /* Allow content to expand */
 }
