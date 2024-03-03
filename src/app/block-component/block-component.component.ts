@@ -214,7 +214,8 @@ export class BlockComponentComponent implements AfterViewInit {
 
     if (grid) {
       // Get all cell elements within the grid
-
+      
+      // Rows define the height of each col
       const rows = grid.querySelectorAll('ion-row');
       rows.forEach((row) => {
         const rect = row.getBoundingClientRect();

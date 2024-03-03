@@ -133,7 +133,7 @@ $colors: (
 .yellow_2{
   background: var(--ion-color-warning);
   padding: 10px;
-  width: stretch !important;
+  max-width: fit-content;
   color: black;
   margin-bottom:-15px;
   min-width: 50px !important;
@@ -155,7 +155,23 @@ br {
   line-height: 50%;
 }
 
-.input {
+.container { // For div that has label and type of expression in talk
+  display: flex;
+  align-items: center; /* Align items vertically */
+  width: 100%;
+}
+
+.label { // Label for Talk with somehting else
+  padding-right: 70px;
+  padding-left: 30px;
   width: fit-content !important;
-  min-width: 100px;
+  align-items: center;
+  justify-content: center;
+}
+
+.just-label{
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  align-content: center;
 }
