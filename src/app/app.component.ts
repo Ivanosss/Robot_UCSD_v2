@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component,  Output, EventEmitter} from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IonicModule, PopoverController} from '@ionic/angular';
 import { RoutineAreaModule } from './routine-area/routine-area.module';
 import { SidebarModule } from './sidebar/sidebar.module';
@@ -21,7 +21,9 @@ import { TabData } from './models/tabsdata';
 import { TabServiceService } from './tab-service.service';
 import { OverlayEventDetail} from '@ionic/core'; 
 import * as yaml from '../../node_modules/js-yaml/dist/js-yaml';
-
+import { RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { NavigationEnd} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -32,7 +34,8 @@ import * as yaml from '../../node_modules/js-yaml/dist/js-yaml';
     RoutineAreaModule, 
     SidebarModule,
     FormsModule,
-    HttpClientModule ],
+    HttpClientModule, RouterModule ],
+    
   providers:[PopUpService, RestService, NewBlockService, BlockComponentComponent ],
 
 })
@@ -41,6 +44,7 @@ export class AppComponent implements OnInit {
   @Output() agregarTab: EventEmitter<void> = new EventEmitter<void>();
   @Output() removeTabEvent = new EventEmitter<void>();
   @ViewChild('botonesContainer', { read: ViewContainerRef  }) botonesContainer: ViewContainerRef;
+  showLayout = true;
 
   block_view: boolean = true; // Switching between block view and yaml view
   routine: Routines;
@@ -49,7 +53,7 @@ export class AppComponent implements OnInit {
   renaming_routine: boolean = false;
   send_data_routine: SendDataRoutine = new SendDataRoutine();
 
-  constructor(private new_block: NewBlockService, private popUpService: PopUpService, private componentFactoryResolver: ComponentFactoryResolver,
+  constructor(private router: Router,private new_block: NewBlockService, private popUpService: PopUpService, private componentFactoryResolver: ComponentFactoryResolver,
     private popoverController: PopoverController, private rs: RestService, private tabService: TabServiceService) {
       this.popUpService.retrieve_current_routine.subscribe( // When 'get' routine is called
         (data) =>{
@@ -99,6 +103,15 @@ export class AppComponent implements OnInit {
   }
   
   async ngOnInit() {
+     // Suscribirse a los eventos de navegación para decidir cuándo mostrar el layout principal.
+
+     
+     this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      // Actualiza showMainLayout basándote en la URL actual
+      this.showLayout = event.urlAfterRedirects !== '/home';
+    });
     // Abre el popover personalizado tan pronto como la página se inicie
     const popover = await this.popoverController.create({
       component: PopUpLoadPreviousRoutineComponent, // Reemplaza con tu página de popover personalizado
