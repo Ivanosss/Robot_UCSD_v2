@@ -21,7 +21,7 @@ import { TabData } from './models/tabsdata';
 import { TabServiceService } from './tab-service.service';
 import { OverlayEventDetail} from '@ionic/core'; 
 import * as yaml from '../../node_modules/js-yaml/dist/js-yaml';
-import { HomeComponent } from './home/home.component'; 
+// import { HomeComponent } from './home/home.component'; 
 import { RouterModule } from '@angular/router';
 
 @Component({
