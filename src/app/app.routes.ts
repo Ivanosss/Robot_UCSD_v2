@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: '',
-    pathMatch: 'full',
-  },
+
+  { path: 'home', component: HomeComponent }, // Ruta para el componente de Home
+  
 ];

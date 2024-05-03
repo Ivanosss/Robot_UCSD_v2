@@ -21,7 +21,8 @@ import { TabData } from './models/tabsdata';
 import { TabServiceService } from './tab-service.service';
 import { OverlayEventDetail} from '@ionic/core'; 
 import * as yaml from '../../node_modules/js-yaml/dist/js-yaml';
-
+import { HomeComponent } from './home/home.component'; 
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -32,7 +33,7 @@ import * as yaml from '../../node_modules/js-yaml/dist/js-yaml';
     RoutineAreaModule, 
     SidebarModule,
     FormsModule,
-    HttpClientModule ],
+    HttpClientModule, RouterModule, HomeComponent ],
   providers:[PopUpService, RestService, NewBlockService, BlockComponentComponent ],
 
 })
@@ -48,6 +49,8 @@ export class AppComponent implements OnInit {
   routines: Array<Routines> = []; // All of the routines in the tabs
   renaming_routine: boolean = false;
   send_data_routine: SendDataRoutine = new SendDataRoutine();
+  showHome = true;  
+
 
   constructor(private new_block: NewBlockService, private popUpService: PopUpService, private componentFactoryResolver: ComponentFactoryResolver,
     private popoverController: PopoverController, private rs: RestService, private tabService: TabServiceService) {
@@ -186,6 +189,8 @@ export class AppComponent implements OnInit {
 
   onNewPressed(){ // New tab
     this.agregarTabAlContainer();
+    this.showHome = false;
+    console.log("Botón NEW presionado, showHome:", this.showHome); // Verifica el estado
   }
 
   mostrarBloque = false;

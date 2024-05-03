@@ -1,0 +1,39 @@
+<div [ngStyle]="{'display': isVisible ? 'block' : 'none'}">
+  <div class="vscode-container">
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="assets/logo.png" alt="Robot Logo">
+      </div>
+      <nav class="nav-section">
+        <!-- Lista de navegación aquí -->
+        <ul>
+          <li><a href="#">Recent</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Welcome to Robot UCSD V2</h1>
+      </header>
+      <section class="walkthrough-section">
+        <!-- Contenido y botones de sección de Walkthroughs aquí -->
+        <h2>Walkthroughs</h2>
+        <p>Explore our walkthroughs to learn how to create routines for your therapy robot.</p>
+        <button>Get Started</button>
+      </section>
+      <!-- Sección adicional de la galería de imágenes inspiradoras -->
+      <section class="additional-section">
+        <h2>Inspiración</h2>
+        <div class="image-gallery">
+          <img src="assets/logo.png" alt="Imagen 1">
+          <!-- <img src="assets/image2.jpg" alt="Imagen 2">
+          <img src="assets/image3.jpg" alt="Imagen 3"> -->
+          <!-- Agrega más imágenes según sea necesario -->
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer class="footer">
+    <p>&copy; 2024 UCSD</p>
+  </footer>
+</div>

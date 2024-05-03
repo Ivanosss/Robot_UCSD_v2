@@ -1,32 +1,42 @@
 <ion-app>
-  <ion-split-pane class="parte_1" contentId="main-content">
-      <ion-content contentId="left-content" class="first" color="light">
-        <app-sidebar-accordeon></app-sidebar-accordeon> <!--Sidebar-->
-      </ion-content>
-      <ion-content contentId="right-content" class="third">
-        <ion-grid class="top-grid"> <!--Grid for the tabs + button-->
-          <ion-row class="whole-row">
-            <!--Actual tabs-->
-            <ion-col class="col"><div class="botones-container" *ngFor="let tab of tabDataList; let i = index"> <!--Unopened tabs are not highlighted-->
+  <ion-split-pane class="parte_2" contentId="main-content">
+    <ion-content contentId="left-content" class="first" color="light">
+      <app-sidebar-accordeon></app-sidebar-accordeon> <!--Sidebar-->
+    </ion-content>
+
+    <ion-content contentId="right-content" class="third">
+      <ion-grid class="top-grid"> <!--Grid for the tabs + button-->
+        <ion-row class="whole-row">
+          <!--Actual tabs-->
+          <ion-col class="col">
+            <div class="botones-container" *ngFor="let tab of tabDataList; let i = index"> <!--Unopened tabs are not highlighted-->
               <ion-button class="my-button ion-text-left" size="small" color="light" *ngIf="i != opened_tab" (click)="tabClicked($event, i)"> 
                 <ion-label id="tabID_{{i}}" [ngStyle]="{'padding-left': '0px', 'float':'left'}">{{tab.tabName}}</ion-label>
               </ion-button>
               <ion-item class="my-button-selected" size="small" color="white" *ngIf="i == opened_tab" (dblclick)="currentTabClicked($event, i)"> <!--Opened tab is highlighted-->
-                <ion-label id="tabID_{{i}}" *ngIf="!renaming_routine">{{tab.tabName}}</ion-label> <!--At the beggining is only a label-->
+                <ion-label id="tabID_{{i}}" *ngIf="!renaming_routine">{{tab.tabName}}</ion-label> <!--At the beginning is only a label-->
                 <ion-label id="tabID_{{i}}" *ngIf="renaming_routine"> <!--Change to text field when selected-->
                   <input type="text" #renameInput class="rename_routine" value="{{tab.tabName}}" (blur)="handleBlur($event, i, renameInput.value)"> <!--blur is to save when out of focus-->
                 </ion-label>
-                <ion-icon (click)="eliminarBoton(i)" class="my-icon-close" slot="end"name="close-circle-outline" ></ion-icon>
+                <ion-icon (click)="eliminarBoton(i)" class="my-icon-close" slot="end" name="close-circle-outline"></ion-icon>
               </ion-item>             
-            </div></ion-col>
-            <ion-col class="ion-text-right" size="auto"><ion-button (click)="Switch_View()">Switch To<br>YAML View</ion-button></ion-col>
-          </ion-row>          
-        </ion-grid>
-        <app-block-component *ngIf="block_view"></app-block-component> <!--Show blocks if is this-->
-        <pre style="padding: 15px;" *ngIf="!block_view" id="yamlText"></pre>
-      </ion-content>
-    </ion-split-pane>
-  
-  <!--Buttons are on top of the actual view-->
+            </div>
+          </ion-col>
+          <ion-col class="ion-text-right" size="auto">
+            <ion-button (click)="Switch_View()">Switch To<br>YAML View</ion-button>
+          </ion-col>
+        </ion-row>          
+      </ion-grid>
+      
+      
+      <div class="main-route-content">
+        <router-outlet></router-outlet> <!-- Aquí se mostrará el componente de la ruta activa -->
+        <app-home *ngIf="showHome"></app-home> <!-- Componente HomeComponent controlado por showHome -->
+        <app-home [isVisible]="showHome"></app-home>
+      </div>
+    </ion-content>
+  </ion-split-pane>
+
+  <!-- Button to trigger hiding of HomeComponent -->
   <ion-button size="large" color="medium" class="clear" (click)="onNewPressed()">NEW</ion-button>
 </ion-app>
