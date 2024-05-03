@@ -33,7 +33,12 @@ import { RouterModule } from '@angular/router';
     RoutineAreaModule, 
     SidebarModule,
     FormsModule,
-    HttpClientModule, RouterModule, HomeComponent ],
+    HttpClientModule, RouterModule ],
+  // imports: [IonicModule, RouterLink, RouterLinkActive, CommonModule, 
+  //   RoutineAreaModule, 
+  //   SidebarModule,
+  //   FormsModule,
+  //   HttpClientModule, RouterModule, HomeComponent ],
   providers:[PopUpService, RestService, NewBlockService, BlockComponentComponent ],
 
 })
@@ -189,8 +194,8 @@ export class AppComponent implements OnInit {
 
   onNewPressed(){ // New tab
     this.agregarTabAlContainer();
-    this.showHome = false;
-    console.log("Botón NEW presionado, showHome:", this.showHome); // Verifica el estado
+    // this.showHome = false;
+    // console.log("Botón NEW presionado, showHome:", this.showHome); // Verifica el estado
   }
 
   mostrarBloque = false;
